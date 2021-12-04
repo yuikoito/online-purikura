@@ -1,5 +1,4 @@
 import {
-  Button,
   Flex,
   Heading,
   Image,
@@ -9,17 +8,12 @@ import {
 } from "@chakra-ui/react";
 import useTranslate from "../hooks/useTranslate";
 import CommonButton from "./CommonButton";
-import smoothscroll from "smoothscroll-polyfill";
+import useMove from "../hooks/useMove";
 
 export default function Hero() {
   const t = useTranslate();
-  const move = () => {
-    const elm = document.getElementById("start");
-    const content_position = elm.getBoundingClientRect();
-    const elemtop = content_position.top + window.pageYOffset;
-    smoothscroll.polyfill();
-    window.scroll({ top: elemtop, behavior: "smooth" });
-  };
+  const { move } = useMove("start");
+
   return (
     <Stack
       direction={{ base: "column-reverse", md: "row" }}

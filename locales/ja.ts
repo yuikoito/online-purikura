@@ -12,4 +12,5 @@ export const JaTexts = {
   addPaint: "落書きをする",
   selectPhotoFirst: "まずは画像を選択してください。",
   changeImage: "プリクラを作る",
+  save: "保存",
 };

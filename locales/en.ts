@@ -12,4 +12,5 @@ export const EnTexts = {
   addPaint: "Painting",
   selectPhotoFirst: "Please select an picture first.",
   changeImage: "Get a group photo.",
+  save: "Save",
 };
