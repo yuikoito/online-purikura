@@ -32,6 +32,7 @@ export default function Home() {
   const brushType =
     "PatternBrush" || "SprayBrush" || "PencilBrush" || "CircleBrush";
   const effects = [1, 2, 3, 4, 5, 6];
+  const stamps = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const t = useTranlate();
   const [images, setImages] = useState<string[]>([]);
   const [base64array, setBase64array] = useState<string[]>([]);
@@ -144,15 +145,13 @@ export default function Home() {
 
   const selectStamp = () => {
     fabricCanvas.isDrawingMode = false;
-    const rect = new fabric.Rect({
-      top: 100,
-      left: 100,
-      width: 60,
-      height: 70,
-      fill: "red",
-    });
-    fabricCanvas.add(rect);
     setPlayType("stamp");
+  };
+
+  const selectStampHandler = (stamp: number) => {
+    fabric.Image.fromURL(`/stamps/${stamp}.png`, (img) => {
+      fabricCanvas.add(img);
+    });
   };
 
   return (
@@ -214,7 +213,7 @@ export default function Home() {
             <Text fontSize={{ base: "2xl", lg: "3xl" }} my={"3"}>
               {t.changeImage}
             </Text>
-            {changedImage ? (
+            {images.length ? (
               <CommonButton
                 leftIcon={<Icon as={MdOutlineChangeCircle} />}
                 onClick={changeImage}
@@ -228,11 +227,11 @@ export default function Home() {
             )}
           </Box>
           {images.length === 0 ? (
-            <Box w={"50%"}>
+            <Box w={"500px"}>
               <Image src={"/images/hero.png"} alt={`default_image`} />
             </Box>
           ) : (
-            <Grid templateColumns="repeat(3, 1fr)" gap={6} w={"60%"}>
+            <Grid templateColumns="repeat(3, 1fr)" gap={3} w={"500px"}>
               {images.map((image, index) => {
                 return <Image src={image} key={index} alt={`${index}_image`} />;
               })}
@@ -246,10 +245,10 @@ export default function Home() {
       <Center>
         <Flex mt={10} maxW={"5xl"}>
           <Box as={"div"}>
-            <canvas id="canvas" ref={canvasRef} width="600" height="600" />
+            <canvas id="canvas" ref={canvasRef} width="600" height="420" />
           </Box>
-          <Box>
-            <Stack spacing={10} direction="row">
+          <Box w={"300px"}>
+            <Stack spacing={10} direction="row" mb={6}>
               <Radio
                 colorScheme="red"
                 value="painting"
@@ -267,48 +266,73 @@ export default function Home() {
                 スタンプ
               </Radio>
             </Stack>
-            <SketchPicker
-              color={color}
-              onChangeComplete={(e) => onHandleColorChange(e.hex)}
-            />
-            <Image
-              mt={"5"}
-              src={`/brushes/${brushT}.png`}
-              alt={"brush"}
-              w={"200px"}
-            />
-            <Select
-              maxW="250px"
-              borderColor="red.400"
-              onChange={(e) => onHandleTypeChange(e.currentTarget.value)}
-              focusBorderColor="red.400"
-            >
-              <option value="PencilBrush">{"PencilBrush"}</option>
-              <option value="SprayBrush">{"SprayBrush"}</option>
-              <option value="PatternBrush">{"PatternBrush"}</option>
-              <option value="CircleBrush">{"CircleBrush"}</option>
-            </Select>
-            <Slider
-              aria-label="slider-ex-4"
-              defaultValue={width}
-              min={1}
-              max={50}
-              my={3}
-              onChange={(e) => onHandleWidthChange(e)}
-            >
-              <SliderTrack bg="red.100">
-                <SliderFilledTrack bg="red.400" />
-              </SliderTrack>
-              <SliderThumb boxSize={10} bg={"red.400"}>
-                <Box color="white" as={FaPencilAlt} />
-              </SliderThumb>
-            </Slider>
+            {playType === "painting" && (
+              <>
+                <SketchPicker
+                  color={color}
+                  onChangeComplete={(e) => onHandleColorChange(e.hex)}
+                />
+                <Image
+                  mt={"5"}
+                  src={`/brushes/${brushT}.png`}
+                  alt={"brush"}
+                  w={"200px"}
+                />
+                <Select
+                  maxW="250px"
+                  borderColor="red.400"
+                  onChange={(e) => onHandleTypeChange(e.currentTarget.value)}
+                  focusBorderColor="red.400"
+                >
+                  <option value="PencilBrush">{"PencilBrush"}</option>
+                  <option value="SprayBrush">{"SprayBrush"}</option>
+                  <option value="PatternBrush">{"PatternBrush"}</option>
+                  <option value="CircleBrush">{"CircleBrush"}</option>
+                </Select>
+                <Slider
+                  aria-label="slider-ex-4"
+                  defaultValue={width}
+                  min={1}
+                  max={50}
+                  my={3}
+                  onChange={(e) => onHandleWidthChange(e)}
+                >
+                  <SliderTrack bg="red.100">
+                    <SliderFilledTrack bg="red.400" />
+                  </SliderTrack>
+                  <SliderThumb boxSize={10} bg={"red.400"}>
+                    <Box color="white" as={FaPencilAlt} />
+                  </SliderThumb>
+                </Slider>
+              </>
+            )}
+            {playType === "stamp" && (
+              <Grid templateColumns="repeat(3, 1fr)" gap={3} w={"100%"}>
+                {stamps.map((stamp, index) => {
+                  return (
+                    <Image
+                      src={`/stamps/${stamp}.png`}
+                      key={index}
+                      alt={`${index}_image`}
+                      onClick={() => selectStampHandler(stamp)}
+                      cursor={"pointer"}
+                    />
+                  );
+                })}
+              </Grid>
+            )}
             <CommonButton
               leftIcon={<Icon as={FiDownloadCloud} />}
               onClick={onSaveClick}
+              full
             >
               {t.save}
             </CommonButton>
+            {playType === "stamp" && (
+              <Center mt={5}>
+                <Image src={"/gomi.png"} alt={"gomi"} />
+              </Center>
+            )}
           </Box>
         </Flex>
       </Center>
