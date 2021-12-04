@@ -8,11 +8,18 @@ import {
   Flex,
   Text,
   Select,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Stack,
+  Radio,
 } from "@chakra-ui/react";
 import Hero from "../components/Hero";
 import Tite from "../components/Title";
 import CommonButton from "../components/CommonButton";
 import { FiUploadCloud, FiDownloadCloud } from "react-icons/fi";
+import { FaPencilAlt } from "react-icons/fa";
 import { MdOutlineChangeCircle } from "react-icons/md";
 import useTranlate from "../hooks/useTranslate";
 import { useState, useRef, useEffect } from "react";
@@ -20,9 +27,6 @@ import resizeImage from "../libs/resizeImage";
 import useMove from "../hooks/useMove";
 import { fabric } from "fabric";
 import { SketchPicker } from "react-color";
-import "@tensorflow/tfjs-core";
-import "@tensorflow/tfjs-converter";
-import "@tensorflow/tfjs-backend-webgl";
 
 export default function Home() {
   const brushType =
@@ -39,8 +43,8 @@ export default function Home() {
   const [brushT, setBrushT] = useState<string>("PencilBrush");
   const [color, setColor] = useState<string>("#000");
   const [width, setWidth] = useState<number>(20);
-
   const { move } = useMove("selectPhoto");
+  const [playType, setPlayType] = useState<"painting" | "stamp">("painting");
 
   const setBrush = (
     canvas: fabric.Canvas,
@@ -105,16 +109,6 @@ export default function Home() {
       isDrawingMode: true, // 手書き入力ON
     });
     setFabricCanvas(canvas);
-    // canvas.isDrawingMode = false
-    // var rect = new fabric.Rect({
-    //   top: 100,
-    //   left: 100,
-    //   width: 60,
-    //   height: 70,
-    //   fill: "red",
-    // });
-
-    // canvas.add(rect);
     setBrush(canvas, "#000", 20, "PencilBrush");
     setBackgroundImage(canvas);
   }, [changedImage]);
@@ -141,6 +135,24 @@ export default function Home() {
   const onHandleTypeChange = (t: string) => {
     setBrushT(t);
     setBrush(fabricCanvas, color, width, t);
+  };
+
+  const selectPainting = () => {
+    fabricCanvas.isDrawingMode = true;
+    setPlayType("painting");
+  };
+
+  const selectStamp = () => {
+    fabricCanvas.isDrawingMode = false;
+    const rect = new fabric.Rect({
+      top: 100,
+      left: 100,
+      width: 60,
+      height: 70,
+      fill: "red",
+    });
+    fabricCanvas.add(rect);
+    setPlayType("stamp");
   };
 
   return (
@@ -232,26 +244,65 @@ export default function Home() {
         <Tite>{t.addPaint}</Tite>
       </Center>
       <Center>
-        <Flex mt={10}>
+        <Flex mt={10} maxW={"5xl"}>
           <Box as={"div"}>
             <canvas id="canvas" ref={canvasRef} width="600" height="600" />
           </Box>
           <Box>
+            <Stack spacing={10} direction="row">
+              <Radio
+                colorScheme="red"
+                value="painting"
+                isChecked={playType === "painting"}
+                onClick={selectPainting}
+              >
+                落書き
+              </Radio>
+              <Radio
+                colorScheme="red"
+                value="stamp"
+                isChecked={playType === "stamp"}
+                onClick={selectStamp}
+              >
+                スタンプ
+              </Radio>
+            </Stack>
             <SketchPicker
               color={color}
               onChangeComplete={(e) => onHandleColorChange(e.hex)}
             />
+            <Image
+              mt={"5"}
+              src={`/brushes/${brushT}.png`}
+              alt={"brush"}
+              w={"200px"}
+            />
             <Select
               maxW="250px"
-              borderColor="tomato"
+              borderColor="red.400"
               onChange={(e) => onHandleTypeChange(e.currentTarget.value)}
-              focusBorderColor="tomato"
+              focusBorderColor="red.400"
             >
               <option value="PencilBrush">{"PencilBrush"}</option>
               <option value="SprayBrush">{"SprayBrush"}</option>
               <option value="PatternBrush">{"PatternBrush"}</option>
               <option value="CircleBrush">{"CircleBrush"}</option>
             </Select>
+            <Slider
+              aria-label="slider-ex-4"
+              defaultValue={width}
+              min={1}
+              max={50}
+              my={3}
+              onChange={(e) => onHandleWidthChange(e)}
+            >
+              <SliderTrack bg="red.100">
+                <SliderFilledTrack bg="red.400" />
+              </SliderTrack>
+              <SliderThumb boxSize={10} bg={"red.400"}>
+                <Box color="white" as={FaPencilAlt} />
+              </SliderThumb>
+            </Slider>
             <CommonButton
               leftIcon={<Icon as={FiDownloadCloud} />}
               onClick={onSaveClick}
