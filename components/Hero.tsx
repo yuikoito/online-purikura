@@ -8,9 +8,18 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import useTranslate from "../hooks/useTranslate";
+import CommonButton from "./CommonButton";
+import smoothscroll from "smoothscroll-polyfill";
 
 export default function Hero() {
   const t = useTranslate();
+  const move = () => {
+    const elm = document.getElementById("start");
+    const content_position = elm.getBoundingClientRect();
+    const elemtop = content_position.top + window.pageYOffset;
+    smoothscroll.polyfill();
+    window.scroll({ top: elemtop, behavior: "smooth" });
+  };
   return (
     <Stack
       direction={{ base: "column-reverse", md: "row" }}
@@ -48,16 +57,7 @@ export default function Hero() {
             {t.description}
           </Text>
           <Stack direction={{ base: "column", md: "row" }}>
-            <Button
-              rounded={"full"}
-              bg={"red.400"}
-              color={"white"}
-              _hover={{
-                bg: "red.500",
-              }}
-            >
-              {t.start}
-            </Button>
+            <CommonButton onClick={move}> {t.start}</CommonButton>
           </Stack>
         </Stack>
       </Flex>
