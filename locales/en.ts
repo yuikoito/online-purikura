@@ -4,4 +4,7 @@ export const EnTexts = {
   description:
     "New Photo Booth for the Corona Era - This app makes it easy to take Purikura with everyone, even if they are far away.",
   start: "Try Now",
+  selectPhoto: "Select a photo",
+  uploadPicture: "Upload",
+  selectPhotoFromLibrary: "Select an picture from the library.",
 };
