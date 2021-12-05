@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import Hero from "../components/Hero";
 import Tite from "../components/Title";
+import Footer from "../components/Footer";
 import CommonButton from "../components/CommonButton";
 import { FiUploadCloud, FiDownloadCloud } from "react-icons/fi";
 import { FaPencilAlt } from "react-icons/fa";
@@ -27,6 +28,7 @@ import resizeImage from "../libs/resizeImage";
 import useMove from "../hooks/useMove";
 import { fabric } from "fabric";
 import { SketchPicker } from "react-color";
+import axios from "axios";
 
 export default function Home() {
   const brushType =
@@ -46,6 +48,7 @@ export default function Home() {
   const [width, setWidth] = useState<number>(20);
   const { move } = useMove("selectPhoto");
   const [playType, setPlayType] = useState<"painting" | "stamp">("painting");
+  const [isLoad, setIsLoad] = useState<boolean>(false);
 
   const setBrush = (
     canvas: fabric.Canvas,
@@ -71,8 +74,8 @@ export default function Home() {
     }
   };
 
-  const setBackgroundImage = (canvas: fabric.Canvas) => {
-    fabric.Image.fromURL("/images/hero.png", (img) => {
+  const setBackgroundImage = (canvas: fabric.Canvas, changedImage: string) => {
+    fabric.Image.fromURL(changedImage, (img) => {
       img.set({
         opacity: 1,
         scaleX: canvas.width / img.width,
@@ -101,8 +104,27 @@ export default function Home() {
     setBackground(id);
     move();
   };
-  const changeImage = () => {
-    console.log(background, base64array);
+  const changeImage = async () => {
+    setIsLoad(true);
+    const response = await axios.post(
+      process.env.NEXT_PUBLIC_API_ENDPOINT,
+      JSON.stringify({
+        image: base64array,
+        style: background,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    setIsLoad(false);
+    setChangedImage(`data:image/png;base64,${response.data.image}`);
+    // setBackgroundImage(
+    //   fabricCanvas,
+    //   `data:image/png;base64,${response.data.image}`
+    // );
+    setBackgroundImage(fabricCanvas, "/a.jpeg");
   };
 
   useEffect(() => {
@@ -111,8 +133,7 @@ export default function Home() {
     });
     setFabricCanvas(canvas);
     setBrush(canvas, "#000", 20, "PencilBrush");
-    setBackgroundImage(canvas);
-  }, [changedImage]);
+  }, []);
 
   const onSaveClick = () => {
     if (!fabricCanvas) return;
@@ -242,12 +263,20 @@ export default function Home() {
       <Center>
         <Tite>{t.addPaint}</Tite>
       </Center>
+
+      {!changedImage && (
+        <Center>
+          <Text my={"3"} color={"gray.500"}>
+            先に画像を作成してください
+          </Text>
+        </Center>
+      )}
       <Center>
         <Flex mt={10} maxW={"5xl"}>
           <Box as={"div"}>
             <canvas id="canvas" ref={canvasRef} width="600" height="420" />
           </Box>
-          <Box w={"300px"}>
+          <Box w={"300px"} ml={10}>
             <Stack spacing={10} direction="row" mb={6}>
               <Radio
                 colorScheme="red"
@@ -336,6 +365,7 @@ export default function Home() {
           </Box>
         </Flex>
       </Center>
+      <Footer />
     </>
   );
 }
