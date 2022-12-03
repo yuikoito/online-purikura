@@ -26,7 +26,7 @@ import useTranlate from "../hooks/useTranslate";
 import { useState, useRef, useEffect } from "react";
 import resizeImage from "../libs/resizeImage";
 import useMove from "../hooks/useMove";
-import { fabric } from "fabric";
+// import { fabric } from "fabric";
 import { SketchPicker } from "react-color";
 import axios from "axios";
 
@@ -41,7 +41,7 @@ export default function Home() {
   const [background, setBackground] = useState<number>(1);
   const inputImageRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas>();
+  // const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas>();
   const [changedImage, setChangedImage] = useState<string>();
   const [brushT, setBrushT] = useState<string>("PencilBrush");
   const [color, setColor] = useState<string>("#000");
@@ -50,40 +50,40 @@ export default function Home() {
   const [playType, setPlayType] = useState<"painting" | "stamp">("painting");
   const [isLoad, setIsLoad] = useState<boolean>(false);
 
-  const setBrush = (
-    canvas: fabric.Canvas,
-    color: string,
-    width: number,
-    type: string
-  ) => {
-    canvas.freeDrawingBrush = new fabric[type](canvas);
-    if (canvas.freeDrawingBrush) {
-      const brush = canvas.freeDrawingBrush;
-      brush.color = color;
-      if (brush.getPatternSrc) {
-        brush.source = brush.getPatternSrc.call(brush);
-      }
-      brush.width = width;
-      brush.shadow = new fabric.Shadow({
-        blur: 3,
-        offsetX: 0,
-        offsetY: 0,
-        affectStroke: true,
-        color: "white",
-      });
-    }
-  };
+  // const setBrush = (
+  //   canvas: fabric.Canvas,
+  //   color: string,
+  //   width: number,
+  //   type: string
+  // ) => {
+  //   canvas.freeDrawingBrush = new fabric[type](canvas);
+  //   if (canvas.freeDrawingBrush) {
+  //     const brush = canvas.freeDrawingBrush;
+  //     brush.color = color;
+  //     if (brush.getPatternSrc) {
+  //       brush.source = brush.getPatternSrc.call(brush);
+  //     }
+  //     brush.width = width;
+  //     brush.shadow = new fabric.Shadow({
+  //       blur: 3,
+  //       offsetX: 0,
+  //       offsetY: 0,
+  //       affectStroke: true,
+  //       color: "white",
+  //     });
+  //   }
+  // };
 
-  const setBackgroundImage = (canvas: fabric.Canvas, changedImage: string) => {
-    fabric.Image.fromURL(changedImage, (img) => {
-      img.set({
-        opacity: 1,
-        scaleX: canvas.width / img.width,
-        scaleY: canvas.height / img.height,
-      });
-      canvas.setBackgroundImage(img, canvas.requestRenderAll.bind(canvas));
-    });
-  };
+  // const setBackgroundImage = (canvas: fabric.Canvas, changedImage: string) => {
+  //   fabric.Image.fromURL(changedImage, (img) => {
+  //     img.set({
+  //       opacity: 1,
+  //       scaleX: canvas.width / img.width,
+  //       scaleY: canvas.height / img.height,
+  //     });
+  //     canvas.setBackgroundImage(img, canvas.requestRenderAll.bind(canvas));
+  //   });
+  // };
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     for (let i = 0; i < e.target.files.length; i++) {
@@ -124,56 +124,56 @@ export default function Home() {
     //   fabricCanvas,
     //   `data:image/png;base64,${response.data.image}`
     // );
-    setBackgroundImage(fabricCanvas, "/a.jpeg");
+    // setBackgroundImage(fabricCanvas, "/a.jpeg");
   };
 
   useEffect(() => {
-    const canvas = new fabric.Canvas("canvas", {
-      isDrawingMode: true, // 手書き入力ON
-    });
-    setFabricCanvas(canvas);
-    setBrush(canvas, "#000", 20, "PencilBrush");
+    // const canvas = new fabric.Canvas("canvas", {
+    //   isDrawingMode: true, // 手書き入力ON
+    // });
+    // setFabricCanvas(canvas);
+    // setBrush(canvas, "#000", 20, "PencilBrush");
   }, []);
 
   const onSaveClick = () => {
-    if (!fabricCanvas) return;
+    // if (!fabricCanvas) return;
     const link = document.createElement("a");
-    const dataurl = fabricCanvas.toDataURL();
-    link.href = dataurl;
-    link.download = "purikura-" + new Date().getTime() + ".jpg";
-    link.click();
+    // const dataurl = fabricCanvas.toDataURL();
+    // link.href = dataurl;
+    // link.download = "purikura-" + new Date().getTime() + ".jpg";
+    // link.click();
   };
 
   const onHandleColorChange = (c: string) => {
     setColor(c);
-    setBrush(fabricCanvas, c, width, brushT);
+    // setBrush(fabricCanvas, c, width, brushT);
   };
 
   const onHandleWidthChange = (w: number) => {
     setWidth(w);
-    setBrush(fabricCanvas, color, w, brushT);
+    // setBrush(fabricCanvas, color, w, brushT);
   };
 
   const onHandleTypeChange = (t: string) => {
     setBrushT(t);
-    setBrush(fabricCanvas, color, width, t);
+    // setBrush(fabricCanvas, color, width, t);
   };
 
   const selectPainting = () => {
-    fabricCanvas.isDrawingMode = true;
+    // fabricCanvas.isDrawingMode = true;
     setPlayType("painting");
   };
 
   const selectStamp = () => {
-    fabricCanvas.isDrawingMode = false;
+    // fabricCanvas.isDrawingMode = false;
     setPlayType("stamp");
   };
 
-  const selectStampHandler = (stamp: number) => {
-    fabric.Image.fromURL(`/stamps/${stamp}.png`, (img) => {
-      fabricCanvas.add(img);
-    });
-  };
+  // const selectStampHandler = (stamp: number) => {
+  //   fabric.Image.fromURL(`/stamps/${stamp}.png`, (img) => {
+  //     fabricCanvas.add(img);
+  //   });
+  // };
 
   return (
     <>
@@ -335,7 +335,7 @@ export default function Home() {
                 </Slider>
               </>
             )}
-            {playType === "stamp" && (
+            {/* {playType === "stamp" && (
               <Grid templateColumns="repeat(3, 1fr)" gap={3} w={"100%"}>
                 {stamps.map((stamp, index) => {
                   return (
@@ -349,7 +349,7 @@ export default function Home() {
                   );
                 })}
               </Grid>
-            )}
+            )} */}
             <CommonButton
               leftIcon={<Icon as={FiDownloadCloud} />}
               onClick={onSaveClick}
